@@ -26,6 +26,9 @@ public class Spaceship {
     }
     public void buyFuel(int amount){
         this.fuel += amount;
+        if(this.fuel > 100){
+            this.fuel = 100;
+        }
     }
 
 

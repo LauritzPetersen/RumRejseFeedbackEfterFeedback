@@ -73,7 +73,7 @@ public class GameEvents {
         handleStatusChecks();
         int fuelCost = random.nextInt(15) + 5;
         spaceship.burnFuel(fuelCost);
-        gameView.printMessage("\nI rejser videre... Det kostede " + fuelCost + " brændstof.");
+        gameView.printMessage("\nDu rejser videre... Du forbrændte " + fuelCost + " brændstof.");
         log.add("Rejse: Brugte " + fuelCost + " brændstof.");
         handleStatusChecks();
     }
@@ -89,14 +89,6 @@ public class GameEvents {
         }
     }
 
-    private void handleStatusChecks() {
-        try {
-            checkCriticalStatus();
-        } catch (CriticalStatusException e) {
-            gameView.printMessage("\nADVARSEL: " + e.getMessage());
-        }
-        checkGameOverStatus();
-    }
 
     public void checkGameOverStatus() {
         if (spaceship.getFuel() <= 0) {
@@ -106,6 +98,17 @@ public class GameEvents {
             throw new GameOverException("Skibet er ødelagt!");
         }
     }
+
+
+    private void handleStatusChecks() {
+        try {
+            checkCriticalStatus();
+        } catch (CriticalStatusException e) {
+            gameView.printMessage("\nADVARSEL: " + e.getMessage());
+        }
+        checkGameOverStatus();
+    }
+
 
 
     public void eventStorm() {
@@ -131,17 +134,18 @@ public class GameEvents {
                 int damage = random.nextInt(25) + 1;
                 if (spaceship.getShieldLevel() > 0) {
                     damage = damage / (spaceship.getShieldLevel() + 1);
-                    spaceship.takeDamage(damage);
-                    log.add("Event Rumstorm: Valgte omvej, forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade");
-                    gameView.printMessage("Du forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade da du tog omvejen.");
-                    break;
+                }
+                spaceship.takeDamage(damage);
+                log.add("Event Rumstorm: Valgte omvej, forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade");
+                gameView.printMessage("Du forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade da du tog omvejen.");
+                break;
                 } else {
                     gameView.printMessage("Ugyldigt valg, prøv igen.");
                 }
             }
             handleStatusChecks();
         }
-    }
+
 
 
     public void tradeEvent() {
@@ -150,9 +154,9 @@ public class GameEvents {
             gameView.printMessage("EVENT - TradeStation\n" +
                     "Et rumvæsen tilbyder handel og opgraderinger\n" +
                     "Vælg handling:\n" +
-                    "1) Byt reservedele for brændstof\n" +
-                    "2) køb repair kit (koster " + "15" + " reservedele)\n" +
-                    "3) Opgrader shield level (koster " + "4" + " reservedele)\n" +
+                    "1) Byt reservedele for brændstof (5 fuel pr reservedel)\n" +
+                    "2) køb repair kit (koster 15 reservedele)\n" +
+                    "3) Opgrader shield level (koster 4 reservedele)\n" +
                     "4) Forsæt Rumrejse");
 
             int choice = gameView.readUserInput("Dit valg: ");
@@ -188,8 +192,11 @@ public class GameEvents {
         if (amount < 0) throw new IllegalArgumentException("Antal kan ikke være negativt.");
         if (amount > spaceship.getSpareParts()) throw new InvalidTradeException("Ikke nok reservedele.");
 
-        spaceship.useSpareParts(amount);
         int fuelBought = amount * 5;
+        if(spaceship.getFuel() + fuelBought > 100){
+            throw new InvalidTradeException("kan ikke købe så meget brændstof!, maks brændstof er 100.");
+        }
+        spaceship.useSpareParts(amount);
         spaceship.buyFuel(fuelBought);
 
         gameView.printMessage("Succes! Byttede " + amount + " dele for " + fuelBought + " fuel.");
