@@ -19,7 +19,6 @@ public class Spaceship {
         this.captain = captain;
     }
 
-
     public void burnFuel(int amount){
         this.fuel -= amount;
         if (this.fuel < 0){
@@ -59,15 +58,6 @@ public class Spaceship {
         repairKitUsed = true;
         return true;
     }
-
-    public void addLog(String entry){
-        log.add(entry);
-    }
-    public ArrayList<String> getLog(){
-        return log;
-    }
-
-
 
 
     public String getName() {

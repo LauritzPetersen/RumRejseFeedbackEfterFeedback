@@ -1,6 +1,7 @@
 package View;
 
 import Model.Spaceship;
+import Service.GameEvents;
 
 import java.util.Scanner;
 
@@ -10,14 +11,12 @@ public class GameView {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public int readUserInput(String prompt){
+
+    public int readUserInput(String prompt) throws NumberFormatException {
         while(true){
             System.out.println(prompt);
-            try{
-                return Integer.parseInt(scanner.nextLine());
-            } catch(NumberFormatException e){
-                System.out.println("Ikke et gyldigt tal. Prøv igen");
-            }
+            return Integer.parseInt(scanner.nextLine());
+
         }
     }
     public String readLine(String prompt){
@@ -52,11 +51,6 @@ public class GameView {
                             "\n-------------------\n");
     }
 
-    public void printLog(Spaceship spaceship){
-        System.out.println("\n----Event Log----\n");
-        for (String entry : spaceship.getLog()){
-            System.out.println(entry);
-        }
-    }
+
 
 }

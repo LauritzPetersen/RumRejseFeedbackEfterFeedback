@@ -7,7 +7,4 @@ public class Main {
         GameEvents gameEvents = new GameEvents();
         gameEvents.startGame();
     }
-
-
-
 }
