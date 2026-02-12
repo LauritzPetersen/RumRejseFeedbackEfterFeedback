@@ -27,18 +27,32 @@ public class GameEvents {
             log.add("Spil startede med skib: " + spaceship.getName() + " og kaptajn: " + spaceship.getCaptain());
             gameView.printStatus(spaceship);
             eventStorm();
+            travelEvent();
             findSparePartsEvent();
+
             tradeEvent();
+            travelEvent();
             findSparePartsEvent();
+
             eventEngine();
+            travelEvent();
             findSparePartsEvent();
+
             tradeEvent();
+            travelEvent();
             findSparePartsEvent();
+
             eventStorm();
+            travelEvent();
             findSparePartsEvent();
+
             eventEngine();
-        } catch (CriticalStatusException | GameOverException e) {
+            gameView.printMessage("\nTillykke! Du gennemførte rejsen!");
+            log.add("Spil gennemført.");
+        } catch (GameOverException e) {
             gameView.printMessage(e.getMessage());
+        } catch (Exception e) {
+            gameView.printMessage("En uventet fejl opstod: " + e.getMessage());
         } finally {
             gameView.printMessage("\n----Event Log----\n");
             for (String entry : log) {
@@ -55,6 +69,17 @@ public class GameEvents {
         gameView.printStatus(spaceship);
     }
 
+    public void travelEvent() {
+        handleStatusChecks();
+        int fuelCost = random.nextInt(15) + 5;
+        spaceship.burnFuel(fuelCost);
+        gameView.printMessage("\nI rejser videre... Det kostede " + fuelCost + " brændstof.");
+        log.add("Rejse: Brugte " + fuelCost + " brændstof.");
+        handleStatusChecks();
+    }
+
+
+
     public void checkCriticalStatus() {
         if (spaceship.getFuel() > 1 && spaceship.getFuel() < 15) {
             throw new CriticalStatusException("Brændstof er lavt!: " + spaceship.getFuel());
@@ -62,6 +87,15 @@ public class GameEvents {
         if (spaceship.getFuel() > 1 && spaceship.getIntegrity() < 20) {
             throw new CriticalStatusException("Integritet er lavt!:  " + spaceship.getIntegrity());
         }
+    }
+
+    private void handleStatusChecks() {
+        try {
+            checkCriticalStatus();
+        } catch (CriticalStatusException e) {
+            gameView.printMessage("\nADVARSEL: " + e.getMessage());
+        }
+        checkGameOverStatus();
     }
 
     public void checkGameOverStatus() {
@@ -82,31 +116,31 @@ public class GameEvents {
             int choice = gameView.readUserInput("Dit valg: ");
 
             if (choice == 1) {
-                int fuelCost = random.nextInt(20) + 1;
-                spaceship.burnFuel(fuelCost);
-                int damage = random.nextInt(50) + 1;
+                int damage = random.nextInt(50) + 10;
 
                 if (spaceship.getShieldLevel() > 0) {
                     damage = damage / (spaceship.getShieldLevel() + 1);
                 }
                 spaceship.takeDamage(damage);
                 log.add("Event Rumstorm: Valgte at flyve igennem stormen og tog " + damage + " skade");
-                gameView.printMessage("Du forbrændte " + fuelCost + " brændstof og tog " + damage + " skade da du fløj igennem stormen.");
+                gameView.printMessage("Du tog " + damage + " skade da du fløj igennem stormen.");
                 break;
             } else if (choice == 2) {
-                int fuelCost = random.nextInt(35) + 10;
+                int fuelCost = random.nextInt(15) + 5;
                 spaceship.burnFuel(fuelCost);
                 int damage = random.nextInt(25) + 1;
-                spaceship.takeDamage(damage);
-                log.add("Event Rumstorm: Valgte omvej, forbrændte " + fuelCost + " brændstof og tog " + damage + " skade");
-                gameView.printMessage("Du forbrændte " + fuelCost + " brændstof og tog " + damage + " skade da du tog omvejen.");
-                break;
-            } else {
-                gameView.printMessage("Ugyldigt valg, prøv igen.");
+                if (spaceship.getShieldLevel() > 0) {
+                    damage = damage / (spaceship.getShieldLevel() + 1);
+                    spaceship.takeDamage(damage);
+                    log.add("Event Rumstorm: Valgte omvej, forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade");
+                    gameView.printMessage("Du forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade da du tog omvejen.");
+                    break;
+                } else {
+                    gameView.printMessage("Ugyldigt valg, prøv igen.");
+                }
             }
+            handleStatusChecks();
         }
-        checkCriticalStatus();
-        checkGameOverStatus();
     }
 
 
@@ -130,10 +164,8 @@ public class GameEvents {
                 } else if (choice == 3) {
                     handleShieldPurchase();
                 } else if (choice == 4) {
-                    int fuelCost = random.nextInt(25) + 1;
-                    spaceship.burnFuel(fuelCost);
-                    gameView.printMessage("Du valgte at forsætte rumrejsen, og forbrændte " + fuelCost + " brændstof til næste destination.");
-                    log.add("Event TradeStation: spiller fortsatte rumrejsen, og forbrændte " + fuelCost + " brændstof til næste destination");
+                    gameView.printMessage("Du valgte at forsætte rumrejsen");
+                    log.add("Event TradeStation: spiller fortsatte rumrejsen");
                     trading = false;
                 } else {
                     gameView.printMessage("Ugyldigt valg, prøv igen.");
@@ -145,8 +177,7 @@ public class GameEvents {
                 gameView.printStatus(spaceship);
             }
         }
-        checkCriticalStatus();
-        checkGameOverStatus();
+        handleStatusChecks();
     }
 
 
@@ -188,19 +219,20 @@ public class GameEvents {
         log.add("Event TradeStation: Købte 1 repair kit.");
     }
 
+
+
+
     public void eventEngine() {
-        gameView.printMessage("\n----Event Motorfejl----\n" +
-                "Din motor er stoppet!");
+        gameView.printMessage("\n----Event Motorfejl----\n" + "Din motor er stoppet!");
 
         boolean engineRunning = false;
         int attempts = 0;
 
         while (!engineRunning) {
             gameView.printStatus(spaceship);
-
-                gameView.printMessage("\nMuligheder:\n" +
-                        "1) Brug et repair kit (Sikker succes)\n" +
-                        "2) Forsøg at genstarte motoren (Risikabelt - Forsøg nr. " + (attempts + 1) + ")\n");
+            gameView.printMessage("\nMuligheder:\n" +
+                    "1) Brug et repair kit (Sikker succes)\n" +
+                    "2) Forsøg at genstarte motoren (Risikabelt - Forsøg nr. " + (attempts + 1) + ")\n");
 
             int choice = gameView.readUserInput("Dit valg: ");
 
@@ -212,40 +244,42 @@ public class GameEvents {
                     engineRunning = true;
                 } else {
                     gameView.printMessage("Du har ikke flere repair kits. Du må bruge manuel genstart.");
-
                 }
-
-                if (choice == 2) {
-                    gameView.printMessage("Gør klar til manuel genstart...");
-                    try {
-                        attemptEngineStart();
-                        engineRunning = true;
-                        gameView.printMessage("Motoren startede igen!");
-                        log.add("Event Motorfejl: Manuel genstart lykkedes ved forsøg " + (attempts + 1));
-
-                    } catch (EngineFailureException e) {
-                        attempts++;
-                        int damage = random.nextInt(30) + 5;
+            } else if (choice == 2) {
+                gameView.printMessage("Gør klar til manuel genstart...");
+                try {
+                    attemptEngineStart();
+                    engineRunning = true;
+                    gameView.printMessage("Motoren startede igen!");
+                    log.add("Event Motorfejl: Manuel genstart lykkedes ved forsøg " + (attempts + 1));
+                } catch (EngineFailureException e) {
+                    attempts++;
+                    int damage = random.nextInt(30) + 5;
+                    if (spaceship.getShieldLevel() > 0) {
+                        damage = damage / (spaceship.getShieldLevel() + 1);
                         spaceship.takeDamage(damage);
 
                         gameView.printMessage("FEJL: " + e.getMessage());
                         gameView.printMessage("Skibet tog " + damage + " skade.");
                         log.add("Event Motorfejl: Genstart fejlede (Forsøg " + attempts + ").");
-                        checkGameOverStatus();
-                        checkCriticalStatus();
+
+                        handleStatusChecks();
                     }
                 }
+            } else {
+                gameView.printMessage("Ugyldigt valg, prøv igen.");
             }
         }
     }
 
     private void attemptEngineStart () {
         int chance = random.nextInt(100) + 1;
-        if (chance > 30) {
+        if (chance > 20) {
             throw new EngineFailureException("Motoren hoster, hakker og går i stå igen!");
         }
     }
 }
+
 
 
 

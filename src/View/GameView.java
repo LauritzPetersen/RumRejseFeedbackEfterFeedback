@@ -50,7 +50,7 @@ public class GameView {
                             "Brændstof:    " + spaceship.getFuel() + "\n" +
                             "Integritet    " + spaceship.getIntegrity() + "\n" +
                             "Reservedele:  " + spaceship.getSpareParts() + "\n" +
-                            "Skjold level:       " + spaceship.getShieldLevel() + "\n"+
+                            "Skjold level: " + spaceship.getShieldLevel() + "\n"+
                             "Repair kits:   " + spaceship.getRepairKit() +
                             "\n-------------------\n");
     }
