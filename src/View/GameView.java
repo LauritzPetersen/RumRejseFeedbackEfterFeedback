@@ -23,6 +23,7 @@ public class GameView {
             }
         }
     }
+    
     public String readLine(String prompt){
         while(true){
             System.out.println(prompt);

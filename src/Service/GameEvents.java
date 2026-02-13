@@ -62,7 +62,7 @@ public class GameEvents {
     }
 
     public void findSparePartsEvent() {
-        int foundParts = random.nextInt(10) + 1;
+        int foundParts = random.nextInt(7) + 1;
         spaceship.gainSpareParts(foundParts);
         gameView.printMessage("\nDu fandt " + foundParts + " reservedele, på din rejse!\n");
         log.add("Event Find Spare Parts: Fandt " + foundParts + " reservedele.");
@@ -92,10 +92,12 @@ public class GameEvents {
 
     public void checkGameOverStatus() {
         if (spaceship.getFuel() <= 0) {
-            throw new GameOverException("Brændstof er opbrugt!");
+            throw new GameOverException("----GAME OVER----\n " +
+                    "Brændstof er opbrugt!");
         }
         if (spaceship.getIntegrity() <= 0) {
-            throw new GameOverException("Skibet er ødelagt!");
+            throw new GameOverException("----GAME OVER----\n " +
+                    "Skibet er ødelagt!");
         }
     }
 
@@ -140,7 +142,7 @@ public class GameEvents {
                 log.add("Event Rumstorm: Valgte omvej, forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade");
                 gameView.printMessage("Du forbrændte " + fuelCost + " ekstra brændstof og tog " + damage + " skade da du tog omvejen.");
                 break;
-                } else {
+            } else {
                     gameView.printMessage("Ugyldigt valg, prøv igen.");
                 }
             }
@@ -262,12 +264,8 @@ public class GameEvents {
                     log.add("Event Motorfejl: Manuel genstart lykkedes ved forsøg " + (attempts + 1));
                 } catch (EngineFailureException e) {
                     attempts++;
-                    int damage = random.nextInt(25) + 10;
-                    if (spaceship.getShieldLevel() > 0) {
-                        damage = damage / (spaceship.getShieldLevel() + 1);
-                    }
+                    int damage = random.nextInt(15) + 5;
                     spaceship.takeDamage(damage);
-
                     gameView.printMessage("FEJL: " + e.getMessage());
                     gameView.printMessage("Skibet tog " + damage + " skade.");
                     log.add("Event Motorfejl: Genstart fejlede (Forsøg " + attempts + ").");
@@ -283,7 +281,7 @@ public class GameEvents {
 
     private void attemptEngineStart () {
         int chance = random.nextInt(100) + 1;
-        if (chance > 20) {
+        if (chance > 15) {
             throw new EngineFailureException("Motoren hoster, hakker og går i stå igen!");
         }
     }
