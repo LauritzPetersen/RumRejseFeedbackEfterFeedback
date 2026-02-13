@@ -70,7 +70,6 @@ public class GameEvents {
     }
 
     public void travelEvent() {
-        handleStatusChecks();
         int fuelCost = random.nextInt(15) + 5;
         spaceship.burnFuel(fuelCost);
         gameView.printMessage("\nDu rejser videre... Du forbrændte " + fuelCost + " brændstof.");
@@ -86,6 +85,7 @@ public class GameEvents {
         }
         if (spaceship.getFuel() > 1 && spaceship.getIntegrity() < 20) {
             throw new CriticalStatusException("Integritet er lavt!:  " + spaceship.getIntegrity());
+
         }
     }
 
@@ -105,6 +105,7 @@ public class GameEvents {
             checkCriticalStatus();
         } catch (CriticalStatusException e) {
             gameView.printMessage("\nADVARSEL: " + e.getMessage());
+            log.add("Advarsel: " + e.getMessage());
         }
         checkGameOverStatus();
     }
@@ -261,7 +262,7 @@ public class GameEvents {
                     log.add("Event Motorfejl: Manuel genstart lykkedes ved forsøg " + (attempts + 1));
                 } catch (EngineFailureException e) {
                     attempts++;
-                    int damage = random.nextInt(35) + 10;
+                    int damage = random.nextInt(25) + 10;
                     if (spaceship.getShieldLevel() > 0) {
                         damage = damage / (spaceship.getShieldLevel() + 1);
                     }
@@ -277,6 +278,7 @@ public class GameEvents {
                 gameView.printMessage("Ugyldigt valg, prøv igen.");
             }
         }
+        handleStatusChecks();
     }
 
     private void attemptEngineStart () {
