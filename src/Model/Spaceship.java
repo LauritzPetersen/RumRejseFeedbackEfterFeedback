@@ -13,6 +13,12 @@ public class Spaceship {
     private int repairKit = 1;
 
     public Spaceship(String name, String captain) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Skibets navn må ikke være tomt.");
+        }
+        if (captain == null || captain.trim().isEmpty()) {
+            throw new IllegalArgumentException("Kaptajnens navn må ikke være tomt.");
+        }
         this.name = name;
         this.captain = captain;
     }
