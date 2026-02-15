@@ -19,25 +19,25 @@ public class GameEvents {
             gameView.printStatus(spaceship);
 
 
-            List<GameEvent> route = new ArrayList<>();
-            route.add(new StormEvent(gameView));
-            route.add(new TravelEvent());
-            route.add(new FindSparePartsEvent());
-            route.add(new TradeEvent(gameView));
-            route.add(new TravelEvent());
-            route.add(new FindSparePartsEvent());
-            route.add(new EngineEvent(gameView));
-            route.add(new TravelEvent());
-            route.add(new FindSparePartsEvent());
-            route.add(new StormEvent(gameView));
-            route.add(new TravelEvent());
-            route.add(new FindSparePartsEvent());
-            route.add(new TradeEvent(gameView));
-            route.add(new TravelEvent());
-            route.add(new EngineEvent(gameView));
+            List<GameEvent> events = new ArrayList<>();
+            events.add(new StormEvent(gameView));
+            events.add(new TravelEvent());
+            events.add(new FindSparePartsEvent());
+            events.add(new TradeEvent(gameView));
+            events.add(new TravelEvent());
+            events.add(new FindSparePartsEvent());
+            events.add(new EngineEvent(gameView));
+            events.add(new TravelEvent());
+            events.add(new FindSparePartsEvent());
+            events.add(new StormEvent(gameView));
+            events.add(new TravelEvent());
+            events.add(new FindSparePartsEvent());
+            events.add(new TradeEvent(gameView));
+            events.add(new TravelEvent());
+            events.add(new EngineEvent(gameView));
 
 
-            for (GameEvent event : route) {
+            for (GameEvent event : events) {
                 String result = event.run(spaceship);
 
                 gameView.printMessage(result);
